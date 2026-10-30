@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#dceef2">
+  <title>WalkBuddy — A little buddy. A lovely reason to walk.</title>
+  <meta name="description" content="Turn your everyday walks into a little world of care, treasures and friendship. Meet WalkBuddy, your step counter pet for iPhone and Apple Watch.">
+  <meta property="og:title" content="WalkBuddy — A lovely reason to walk.">
+  <meta property="og:description" content="Your steps. Their whole little world.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/app-icon.png">
+  <link rel="icon" href="assets/app-icon.png">
+  <link rel="apple-touch-icon" href="assets/app-icon.png">
+  <link rel="preload" href="assets/nunito.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script src="translations.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main" data-t="skip">Skip to content</a>
+  <header class="header">
+    <div class="container nav">
+      <a class="brand" href="#" aria-label="WalkBuddy"><img src="assets/app-icon.png" width="42" height="42" alt="">WalkBuddy<span class="brand-dot">.</span></a>
+      <nav class="nav-links" aria-label="Main navigation" data-label="navigation">
+        <a href="#how" data-t="navHow">The little things</a>
+        <a href="#buddies" data-t="navBuddies">Meet your buddy</a>
+        <a href="#faq" data-t="navFaq">Good to know</a>
+      </nav>
+      <label class="language"><span class="sr-only" data-t="language">Language</span><select id="language"><option value="en">English</option><option value="tr">Türkçe</option><option value="ja">日本語</option><option value="de">Deutsch</option><option value="es">Español</option><option value="fr">Français</option></select></label>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="cloud cloud-one" aria-hidden="true"></div><div class="cloud cloud-two" aria-hidden="true"></div>
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <span class="eyebrow"><span class="little-sun" aria-hidden="true">✳</span> <span data-t="heroEye">A little more joy in every day</span></span>
+          <h1 id="hero-title"><span data-t="heroOne">A little buddy.</span><br><em data-t="heroTwo">A lovely reason<br>to walk.</em></h1>
+          <p class="intro" data-t="heroBody">A walk around the block. A tiny friend who’s happy to see you. Make your everyday steps mean a little more.</p>
+          <a class="button store-link" href="#coming-soon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-4.1zM13.9 4.9c.7-.9 1.2-2 1.1-3.2-1 0-2.3.7-3 1.6-.7.8-1.3 2-1.1 3.1 1.1.1 2.3-.6 3-1.5z"/></svg><span data-t="store">Coming soon on iPhone</span></a>
+          <p class="hero-footnote" data-t="devices">Made for iPhone & Apple Watch</p>
+        </div>
+        <div class="hero-art" aria-label="The WalkBuddy puppy and fox out for a walk" data-label="heroArt">
+          <div class="hello" data-t="hello">Oh, there you are!</div>
+          <img class="hero-puppy" src="assets/scene/puppy.png" width="680" height="960" alt="">
+          <img class="hero-fox" src="assets/scene/fox.png" width="680" height="960" alt="">
+          <span class="hero-heart" aria-hidden="true">♥</span>
+        </div>
+      </div>
+      <div class="landscape" aria-hidden="true"><div class="hill far"></div><div class="hill near"></div><div class="ground"></div><div class="path"></div><img class="oak" src="assets/scene/map-scenery-oak.png" alt=""><img class="daisies one" src="assets/scene/map-scenery-daisies.png" alt=""><img class="daisies two" src="assets/scene/map-scenery-daisies.png" alt=""><img class="bush" src="assets/scene/map-scenery-bush.png" alt=""></div>
+    </section>
+
+    <section class="how section" id="how">
+      <div class="container">
+        <div class="section-heading"><p class="eyebrow" data-t="howEye">Small steps. A real connection.</p><h2 data-t="howTitle">Your steps. Their whole little world.</h2><p data-t="howBody">You go about your day. A little friendship grows along the way.</p></div>
+        <div class="steps">
+          <article><span class="sticker blue"><img src="assets/icons/icon-steps.png" alt="" loading="lazy"></span><span class="step-number">01</span><h3 data-t="walkTitle">Go for a walk</h3><p data-t="walkBody">To the coffee shop, to the park, or just because. Your everyday steps count.</p></article>
+          <article><span class="sticker peach"><img src="assets/icons/care-feed.png" alt="" loading="lazy"></span><span class="step-number">02</span><h3 data-t="careTitle">Make their day</h3><p data-t="careBody">Walk to unlock meals, baths, brushing and playtime. Little moments, lots of love.</p></article>
+          <article><span class="sticker yellow"><img src="assets/icons/icon-journey-brightest-star.png" alt="" loading="lazy"></span><span class="step-number">03</span><h3 data-t="growTitle">Grow together</h3><p data-t="growBody">From a tiny newborn to a grown buddy. A story you build one Growth Day at a time.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="family section" id="buddies">
+      <div class="container family-layout">
+        <div class="family-copy"><p class="eyebrow" data-t="familyEye">Your kind of little weird</p><h2 data-t="familyTitle">Someone here<br>is your someone.</h2><p data-t="familyBody">A playful puppy? A curious fox? Maybe a tiny sprout. Meet all 12 buddies and find the one that feels like you.</p><div class="chosen" aria-live="polite"><img id="chosen-face" src="assets/heads/mochi.png" width="68" height="68" alt=""><div><span data-t="selected">Your walking buddy</span><strong id="chosen-name">Puppy</strong></div><span class="chosen-heart" aria-hidden="true">♥</span></div></div>
+        <div class="buddy-grid" role="group" data-label="chooseBuddy" aria-label="Choose a buddy"></div>
+      </div>
+    </section>
+
+    <section class="stories section" id="little-world">
+      <div class="container">
+        <article class="story mint">
+          <div class="story-copy"><p class="eyebrow" data-t="careEye">A little care goes a long way</p><h2 data-t="careHeading">Just one more<br>walk together?</h2><p data-t="careStory">Breakfast tastes better after a stroll. Bath time gets a little splashier. As you walk, you unlock ways to care for your buddy and keep their little world happy.</p><p class="quiet-rule"><span aria-hidden="true">♥</span> <span data-t="careRule">Care never uses coins.</span></p><div class="mini-stickers" aria-hidden="true"><span class="sticker peach"><img src="assets/icons/care-feed.png" alt="" loading="lazy"></span><span class="sticker blue"><img src="assets/icons/care-wash.png" alt="" loading="lazy"></span><span class="sticker pink"><img src="assets/icons/care-groom.png" alt="" loading="lazy"></span><span class="sticker yellow"><img src="assets/icons/care-play.png" alt="" loading="lazy"></span></div></div>
+          <figure class="phone-scene"><div class="phone"><img src="assets/screens/02-care-fox-en.webp" data-screen="02-care-fox" alt="A fox enjoying a meal in WalkBuddy" data-alt="careScreen" loading="lazy" width="1206" height="2622"></div><figcaption data-t="careCaption">A happy tummy. A happy buddy.</figcaption></figure>
+        </article>
+        <article class="story lilac reverse">
+          <div class="story-copy"><p class="eyebrow" data-t="treasureEye">A pocket full of little stories</p><h2 data-t="treasureHeading">Look what<br>we found!</h2><p data-t="treasureStory">Every 1,000 steps, a new treasure. A leaf, a shell, a tiny surprise. The things your buddy collects help shape their personality. Where will your next walk take you?</p><a class="text-link" href="#gallery" data-t="explore">Take a peek inside <span aria-hidden="true">↗</span></a></div>
+          <figure class="phone-scene"><span class="orbit-sticker sticker yellow" aria-hidden="true"><img src="assets/icons/icon-journey-butterfly.png" alt="" loading="lazy"></span><div class="phone"><img src="assets/screens/06-treasures-en.webp" data-screen="06-treasures" alt="WalkBuddy’s Treasures collection" data-alt="treasureScreen" loading="lazy" width="1206" height="2622"></div><figcaption data-t="treasureCaption">Every treasure has a story.</figcaption></figure>
+        </article>
+        <article class="story butter">
+          <div class="story-copy"><p class="eyebrow" data-t="homeEye">A place to call your own</p><h2 data-t="homeHeading">Little home.<br>Big personality.</h2><p data-t="homeStory">A mushroom lamp. A cozy bed. That very important hat. Every step earns a coin to spend on a home and a look that are entirely your buddy’s.</p><div class="coin-note"><img src="assets/icons/icon-coin.png" width="32" height="32" alt="" loading="lazy"><span data-t="coinRule">1 step = 1 coin. A world of possibilities.</span></div></div>
+          <figure class="phone-scene"><div class="phone"><img src="assets/screens/08-decor-en.webp" data-screen="08-decor" alt="Decorating a buddy’s home in WalkBuddy" data-alt="homeScreen" loading="lazy" width="1206" height="2622"></div><figcaption data-t="homeCaption">Very you. Very them. Very cozy.</figcaption></figure>
+        </article>
+      </div>
+    </section>
+
+    <section class="gallery section" id="gallery"><div class="container gallery-layout"><div><p class="eyebrow" data-t="galleryEye">A little look around</p><h2 data-t="galleryTitle">A world worth<br>coming back to.</h2><p data-t="galleryBody">Care, collect, decorate, grow. There’s a little something to look forward to after every walk.</p><div class="gallery-tabs" role="tablist" data-label="galleryLabel" aria-label="Explore WalkBuddy"><button id="tab-care" role="tab" aria-controls="gallery-panel" aria-selected="true" data-gallery="02-care-fox" data-t="tabCare">Care</button><button id="tab-treasures" role="tab" aria-controls="gallery-panel" aria-selected="false" tabindex="-1" data-gallery="06-treasures" data-t="tabTreasures">Treasures</button><button id="tab-home" role="tab" aria-controls="gallery-panel" aria-selected="false" tabindex="-1" data-gallery="08-decor" data-t="tabHome">Home</button><button id="tab-growth" role="tab" aria-controls="gallery-panel" aria-selected="false" tabindex="-1" data-gallery="04-growth" data-t="tabGrowth">Growth</button></div><div class="device-note"><span class="sticker blue"><img src="assets/icons/icon-steps.png" alt="" loading="lazy"></span><p><strong data-t="everywhereTitle">A little closer, wherever you are.</strong><span data-t="everywhereBody">Check on your buddy with Apple Watch and Home Screen widgets.</span></p></div></div><div class="gallery-preview" id="gallery-panel" role="tabpanel" aria-labelledby="tab-care" tabindex="0"><div class="phone"><img id="gallery-image" src="assets/screens/02-care-fox-en.webp" data-screen="02-care-fox" alt="A fox enjoying a meal in WalkBuddy" data-alt="careScreen" loading="lazy" width="1206" height="2622"></div></div></div></section>
+
+    <section class="faq section" id="faq"><div class="container faq-layout"><div><p class="eyebrow" data-t="faqEye">Before our first walk</p><h2 data-t="faqTitle">Good to know.</h2><img class="faq-face" src="assets/heads/fox.png" alt="" loading="lazy" width="180" height="180"></div><div class="questions"><details><summary data-t="q1">How does WalkBuddy count my steps?</summary><p data-t="a1">WalkBuddy uses steps from Apple Health on your iPhone, including steps recorded by your Apple Watch. Your usual walks count without starting a workout.</p></details><details><summary data-t="q2">Do I spend coins to care for my buddy?</summary><p data-t="a2">Care never uses coins. Walking unlocks care moments. Coins are for decorating your buddy’s home and choosing accessories in the Shop.</p></details><details><summary data-t="q3">Do I need an Apple Watch?</summary><p data-t="a3">No. You can walk with just your iPhone. If you have an Apple Watch, you can also check on your buddy and care for them from your wrist.</p></details><details><summary data-t="q4">Which languages can we walk in?</summary><p data-t="a4">WalkBuddy speaks English, Turkish, Japanese, German, Spanish and French.</p></details><details><summary data-t="q5">Where can I get WalkBuddy?</summary><p data-t="a5">WalkBuddy is coming soon to the App Store for iPhone and Apple Watch. The download link will be right here when it’s ready.</p></details></div></div></section>
+
+    <section class="closing section" id="coming-soon"><div class="container"><div class="closing-faces" aria-hidden="true"><img src="assets/heads/rabbit.png" alt="" loading="lazy"><img src="assets/heads/mochi.png" alt="" loading="lazy"><img src="assets/heads/otter.png" alt="" loading="lazy"></div><p class="eyebrow" data-t="closingEye">A small beginning. A lovely friendship.</p><h2 data-t="closingTitle">Your next walk<br>has a plus-one.</h2><p data-t="closingBody">Your little buddy is almost ready to meet you.</p><span class="button coming-label"><span aria-hidden="true">✳</span><span data-t="store">Coming soon on iPhone</span></span><p class="closing-note" data-t="devices">Made for iPhone & Apple Watch</p></div></section>
+  </main>
+  <footer><div class="container footer-inner"><a class="brand" href="#">WalkBuddy<span class="brand-dot">.</span></a><span data-t="footerLine">A little more joy. One step at a time.</span><a href="#faq" data-t="navFaq">Good to know</a><a href="privacy/" data-t="privacy">Privacy</a><a href="mailto:walkbuddysupport@gmail.com" data-t="contact">Contact</a><small>© 2026 WalkBuddy</small></div></footer>
+</body>
+</html>
