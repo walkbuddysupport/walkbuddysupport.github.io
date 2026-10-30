@@ -70,7 +70,13 @@ header { position: absolute; inset: 0 0 auto; z-index: 10; }
 
 /* ---------- Bands ---------- */
 .band { position: relative; overflow: hidden; background: var(--paw), linear-gradient(172deg, var(--a) 0%, var(--b) 100%); color: #fff; }
-.band::after { content: ""; position: absolute; width: 900px; height: 900px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, .35), rgba(255, 255, 255, 0) 62%); left: var(--gx, 60%); top: 10%; pointer-events: none; }
+/* The soft light is drawn inside the band's own box, so the band itself can let phones hang over its bottom edge. */
+@property --sx { syntax: "<length>"; inherits: true; initial-value: 0px; }
+@property --sy { syntax: "<length>"; inherits: true; initial-value: 0px; }
+.band::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle 636px at calc(var(--gx, 60%) + 450px + var(--sx, 0px)) calc(10% + 450px + var(--sy, 0px)), rgba(255, 255, 255, .35), rgba(255, 255, 255, 0) 62%); }
+@supports (overflow: clip) {
+  .band { overflow: visible; overflow-x: clip; }
+}
 .band .wrap { position: relative; z-index: 1; display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; gap: 40px; padding-top: 96px; padding-bottom: 96px; }
 .band.flip .copy { order: 2; }
 h1, h2 { font-weight: 950; letter-spacing: -1.5px; line-height: 1.05; margin: 0; }
@@ -255,8 +261,7 @@ footer .brand img { width: 32px; height: 32px; border-radius: 9px; }
 .lift:hover .num { transform: rotateY(360deg) scale(1.1); background: var(--key); color: #fff; }
 
 /* Bands: the soft light and paw prints drift with the pointer. */
-.band { background-position: var(--bx, 0px) var(--by, 0px), 0 0; transition: background-position .8s ease-out; }
-.band::after { transform: translate(var(--sx, 0px), var(--sy, 0px)); transition: transform 1s ease-out; }
+.band { background-position: var(--bx, 0px) var(--by, 0px), 0 0; transition: background-position .8s ease-out, --sx 1s ease-out, --sy 1s ease-out; }
 
 
 /* Buddy picker: each face turns to watch the pointer and squashes softly when tapped. */
@@ -303,7 +308,7 @@ footer nav a:hover { background-size: 100% 2px; }
   .reveal { opacity: 1; transform: none; transition: none; }
   .stage:hover .phone { --hs: 1; }
   .mark:hover, .eyebrow:hover .lt, .key:hover svg { animation: none; }
-  .band, .band::after { transition: none; }
+  .band { transition: none; }
   html { scroll-behavior: auto; }
 }
 </style>
