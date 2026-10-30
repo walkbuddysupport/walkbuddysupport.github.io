@@ -35,7 +35,9 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+/* Nothing that pops or drifts past the edge may widen the page: on phones that made the whole page zoom out and back. */
+html { scroll-behavior: smooth; overflow-x: hidden; }
+@supports (overflow: clip) { html, body { overflow-x: clip; } }
 body { margin: 0; background: var(--paper); color: var(--text); font-family: Nunito, ui-rounded, system-ui, sans-serif; font-weight: 700; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 img { display: block; max-width: 100%; }
 a { color: inherit; }
@@ -86,13 +88,15 @@ h2 { font-size: clamp(36px, 5.2vw, 62px); }
 .copy .key { margin-top: 30px; }
 
 /* ---------- Phone ---------- */
-.stage { position: relative; justify-self: center; width: min(340px, 78vw); transition: transform .5s cubic-bezier(.2, .9, .3, 1.3); }
-/* Hover: like the how-it-works cards, the phone and its stickers tilt toward the pointer, lift, and the phone glows. */
-.stage:hover { transition: transform .18s ease-out; transform: perspective(1100px) translateY(-12px) rotateX(var(--tx, 0deg)) rotateY(var(--ty, 0deg)) scale(1.02); }
-.stage .phone { transition: box-shadow .5s ease; }
-.stage:hover .phone { box-shadow: 0 0 0 3px #EFEAE2, 0 0 0 4px rgba(0, 0, 0, .10), 0 48px 80px rgba(30, 20, 60, .34), 0 0 40px 6px rgba(255, 255, 255, .55), 0 0 110px 26px rgba(255, 255, 255, .35); animation: phone-glow 1.8s ease-in-out .5s infinite alternate; }
-@keyframes phone-glow { to { box-shadow: 0 0 0 3px #EFEAE2, 0 0 0 4px rgba(0, 0, 0, .10), 0 48px 80px rgba(30, 20, 60, .34), 0 0 54px 10px rgba(255, 255, 255, .7), 0 0 140px 40px rgba(255, 255, 255, .42); } }
-.phone { position: relative; background: #15161A; border-radius: 48px; padding: 9px; box-shadow: 0 0 0 3px #EFEAE2, 0 0 0 4px rgba(0, 0, 0, .10), 0 40px 70px rgba(30, 20, 60, .32), 0 14px 24px rgba(30, 20, 60, .18); transform: perspective(1000px) translate3d(0, var(--ty, 0px), 0) rotate(calc(var(--r, 0deg) + var(--rz, 0deg))) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); will-change: transform; }
+.stage { position: relative; justify-self: center; width: min(340px, 78vw); }
+/* Hover: the phone just grows a little; the stickers and heads around it stay put. */
+.stage .phone { transition: transform .3s ease-out; }
+.stage:hover .phone { --hs: 1.05; transition: transform .45s cubic-bezier(.22, 1, .36, 1); }
+/* Real depth: stacked frame layers behind the screen give the phone a metal edge that shows as it turns. */
+.phone { transform-style: preserve-3d; }
+.phone .edge { position: absolute; inset: 0; border-radius: 48px; background: linear-gradient(90deg, rgba(255, 255, 255, .45), rgba(255, 255, 255, 0) 30%, rgba(0, 0, 0, 0) 65%, rgba(0, 0, 0, .28)), var(--shade); box-shadow: 0 0 0 3px var(--shade); transform: translateZ(var(--z)); pointer-events: none; }
+.phone img { position: relative; }
+.phone { position: relative; background: #15161A; border-radius: 48px; padding: 9px; box-shadow: 0 0 0 3px #EFEAE2, 0 0 0 4px rgba(0, 0, 0, .10), 0 40px 70px rgba(30, 20, 60, .32), 0 14px 24px rgba(30, 20, 60, .18); transform: perspective(1000px) translate3d(0, var(--ty, 0px), 0) rotate(calc(var(--r, 0deg) + var(--rz, 0deg))) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--hs, 1)); will-change: transform; }
 .phone img { width: 100%; aspect-ratio: 1206 / 2622; object-fit: cover; border-radius: 40px; background: #EEE; }
 .head { position: absolute; z-index: 4; width: 120px; filter: drop-shadow(0 16px 20px rgba(40, 30, 70, .28)); animation: bob 6s ease-in-out infinite; transform: translate3d(0, var(--py, 0px), 0) rotate(var(--pr, 0deg)); will-change: transform; }
 
@@ -162,25 +166,6 @@ footer .brand img { width: 32px; height: 32px; border-radius: 9px; }
 .lift .badge { z-index: 3; }
 .lift .badge::before { transition: transform .45s cubic-bezier(.2, .9, .3, 1.5); }
 .lift:hover .badge::before { transform: rotate(2deg) scale(1.1); }
-.lift:hover .badge img { animation: hop .9s cubic-bezier(.3, .7, .4, 1) forwards, sticker-bob 1.6s ease-in-out .9s infinite alternate; }
-@keyframes hop {
-  0% { transform: none; }
-  25% { transform: translateY(-16px) rotate(-10deg) scale(1.15); }
-  45% { transform: translateY(0) scale(1.2, .86); }
-  65% { transform: translateY(-8px) rotate(8deg) scale(1.08); }
-  100% { transform: translateY(-4px) rotate(4deg) scale(1.12); }
-}
-@keyframes sticker-bob { from { transform: translateY(-4px) rotate(4deg) scale(1.12); } to { transform: translateY(-9px) rotate(-3deg) scale(1.14); } }
-/* Hover sparkles: fine dots and tiny stars in each card's colours drift out from the card's edge. */
-.spark { position: absolute; left: 0; top: 0; width: var(--z); height: var(--z); margin: calc(var(--z) / -2) 0 0 calc(var(--z) / -2); background: var(--c); border-radius: 50%; pointer-events: none; z-index: 1; animation: spark var(--d) cubic-bezier(.12, .75, .3, 1) forwards; }
-.spark.star { border-radius: 0; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
-.spark.ring { background: none; border: 2px solid var(--c); }
-@keyframes spark {
-  0% { opacity: 0; transform: translate(0, 0) scale(.2) rotate(0); }
-  12% { opacity: 1; }
-  70% { opacity: 1; }
-  100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(.9) rotate(var(--r)); }
-}
 
 @media (max-width: 900px) {
   .band .wrap { grid-template-columns: 1fr; text-align: center; gap: 56px; padding-top: 72px; padding-bottom: 80px; }
@@ -191,6 +176,106 @@ footer .brand img { width: 32px; height: 32px; border-radius: 9px; }
   .buddies { grid-template-columns: repeat(4, 1fr); }
   .facts { grid-template-columns: 1fr; }
 }
+/* ---------- Play: a small, different reaction on everything you can point at ---------- */
+.fx { position: fixed; inset: 0; pointer-events: none; z-index: 50; overflow: hidden; }
+.pop { position: absolute; left: 0; top: 0; margin: calc(var(--z) / -2) 0 0 calc(var(--z) / -2); width: var(--z); height: var(--z); display: grid; place-items: center; font: 950 calc(var(--z) * .8)/1 Nunito, sans-serif; color: var(--c); animation: pop var(--d) cubic-bezier(.15, .7, .3, 1) forwards; }
+.pop.dot { background: var(--c); border-radius: 50%; }
+.pop.star { background: var(--c); clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
+.pop.foot { background: var(--c); width: calc(var(--z) * .62); margin-left: calc(var(--z) * -.31); border-radius: 50% 50% 46% 46% / 62% 62% 38% 38%; }
+.pop.kibble { background: var(--c); border-radius: 45% 55% 50% 50%; box-shadow: inset -2px -2px 0 rgba(0, 0, 0, .18); }
+.pop.bolt { background: var(--c); clip-path: polygon(58% 0, 12% 56%, 44% 56%, 32% 100%, 88% 40%, 56% 40%, 72% 0); }
+.pop.confetti { background: var(--c); height: calc(var(--z) * .45); margin-top: calc(var(--z) * -.22); border-radius: 2px; }
+.pop.ring { border: 2px solid var(--c); border-radius: 50%; }
+.pop.leaf { background: var(--c); border-radius: 0 100% 0 100%; }
+.pop.text { width: auto; height: auto; margin: -.6em 0 0 -.8em; text-shadow: 0 2px 3px rgba(0, 0, 0, .12); }
+.burst { position: absolute; left: 0; top: 0; }
+.pop img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(40, 30, 70, .25)); }
+.pop.paw { background: var(--paw-one) center / contain no-repeat; animation: paw 1.5s ease-out forwards; rotate: var(--r); }
+.pop.paw.light { background-image: var(--paw-light); }
+/* The paw layer lies on the page, just above section backgrounds and below everything drawn on them. */
+.paws { position: absolute; left: 0; top: 0; width: 100%; z-index: 0; pointer-events: none; }
+.buddy .face, .cta-heads { position: relative; z-index: 1; }
+/* Cards sit a layer up; the hovered one drops a layer so its glow passes under its neighbours, not over them. */
+.lift { z-index: 2; }
+.lift:hover { z-index: 1; }
+@keyframes pop {
+  0% { opacity: 0; transform: translate(0, 0) scale(.3) rotate(0); }
+  14% { opacity: 1; }
+  72% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(1) rotate(var(--r)); }
+}
+@keyframes paw { 0% { opacity: 0; scale: .6; } 15% { opacity: 1; scale: 1; } 100% { opacity: 0; } }
+:root { --paw-one: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-28 -28 56 56'><g fill='%23293143' fill-opacity='.16'><ellipse cx='0' cy='10' rx='13' ry='11'/><circle cx='-14' cy='-6' r='5.5'/><circle cx='-5' cy='-15' r='5.5'/><circle cx='6' cy='-15' r='5.5'/><circle cx='15' cy='-6' r='5.5'/></g></svg>"); --paw-light: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-28 -28 56 56'><g fill='white' fill-opacity='.38'><ellipse cx='0' cy='10' rx='13' ry='11'/><circle cx='-14' cy='-6' r='5.5'/><circle cx='-5' cy='-15' r='5.5'/><circle cx='6' cy='-15' r='5.5'/><circle cx='15' cy='-6' r='5.5'/></g></svg>"); }
+
+/* Speech bubble: a tapped buddy says a little something of its own. */
+.say { position: absolute; left: 0; top: 0; translate: -50% -100%; padding: 7px 12px 8px; border-radius: 14px; background: #FFFDF8; color: var(--ink); font: 950 15px/1 Nunito, sans-serif; white-space: nowrap; box-shadow: 0 6px 16px rgba(41, 49, 67, .16); animation: say 1.4s cubic-bezier(.3, 1.4, .5, 1) forwards; }
+.say::after { content: ""; position: absolute; left: 50%; bottom: -6px; width: 12px; height: 12px; margin-left: -6px; background: inherit; border-radius: 2px; transform: rotate(45deg); }
+@keyframes say {
+  0% { opacity: 0; transform: translateY(8px) scale(.5) rotate(-6deg); }
+  18% { opacity: 1; transform: translateY(0) scale(1) rotate(-3deg); }
+  80% { opacity: 1; transform: translateY(-6px) scale(1) rotate(-3deg); }
+  100% { opacity: 0; transform: translateY(-14px) scale(.95) rotate(-3deg); }
+}
+/* Floating stickers lean in on hover and squish when tapped; coins flip. */
+.float .badge { cursor: pointer; transition: transform .45s cubic-bezier(.3, 1.6, .5, 1); }
+.float:hover .badge { transform: scale(1.12) rotate(-6deg); }
+
+/* Buddy heads beside the phones perk up, and squish with hearts when tapped. */
+.head { cursor: pointer; transition: scale .4s cubic-bezier(.3, 1.6, .5, 1); }
+.head:hover { scale: 1.12; }
+
+/* Highlight badges catch the light. */
+.mark { position: relative; }
+.mark::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(100deg, transparent 38%, rgba(255, 255, 255, .7) 50%, transparent 62%) 130% 0 / 250% 100% no-repeat; pointer-events: none; }
+.mark:hover::after { background-position: -30% 0; transition: background-position .7s ease-in-out; }
+.mark:hover { animation: mark-wiggle .5s ease-in-out; }
+@keyframes mark-wiggle { 25% { transform: rotate(-5deg) scale(1.04); } 55% { transform: rotate(1deg) scale(1.04); } 80% { transform: rotate(-3.5deg); } }
+
+/* Eyebrow pills: the letters hop one after another like steps. */
+.eyebrow { cursor: default; }
+.eyebrow .lt { display: inline-block; white-space: pre; }
+.eyebrow:hover .lt { animation: lt-hop .45s cubic-bezier(.3, .7, .4, 1) calc(var(--i) * 28ms); }
+@keyframes lt-hop { 40% { transform: translateY(-6px) rotate(-6deg); color: var(--forest); } }
+
+/* App Store keys: pulled gently toward the pointer, with a light sweep and a hopping apple. */
+.key { position: relative; overflow: hidden; transform: translate(var(--mx, 0px), var(--my, 0px)); transition: transform .6s cubic-bezier(.22, 1, .36, 1), box-shadow .35s ease; }
+.key:hover { transform: translate(var(--mx, 0px), calc(var(--my, 0px) - 1px)); }
+.key:active { transform: translate(var(--mx, 0px), calc(var(--my, 0px) + 5px)); transition-duration: .08s; }
+.key::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 45%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .45), transparent); transform: translateX(-140%) skewX(-15deg); pointer-events: none; }
+.key:hover::after { transform: translateX(300%) skewX(-15deg); transition: transform .65s ease-in-out; }
+.key:hover svg { animation: apple-hop .9s ease-in-out; }
+@keyframes apple-hop { 40% { transform: translateY(-3px) rotate(-7deg); } 75% { transform: translateY(0) rotate(2deg); } }
+
+/* App icon: a happy spin. */
+.brand img { transition: transform .5s cubic-bezier(.3, 1.6, .5, 1); }
+.brand:hover img { transform: rotate(-12deg) scale(1.12); }
+
+/* Card numbers turn green and flip with the card. */
+.num { transition: transform .5s cubic-bezier(.3, 1.4, .5, 1), background .3s, color .3s; }
+.lift:hover .num { transform: rotateY(360deg) scale(1.1); background: var(--key); color: #fff; }
+
+/* Bands: the soft light and paw prints drift with the pointer. */
+.band { background-position: var(--bx, 0px) var(--by, 0px), 0 0; transition: background-position .8s ease-out; }
+.band::after { transform: translate(var(--sx, 0px), var(--sy, 0px)); transition: transform 1s ease-out; }
+
+
+/* Buddy picker: each face turns to watch the pointer and squashes softly when tapped. */
+.buddy { cursor: pointer; }
+.buddy .face { position: relative; }
+.buddy .face img { transform: translate(var(--lx, 0px), var(--ly, 0px)) rotate(var(--lr, 0deg)); transition: transform .45s cubic-bezier(.22, 1, .36, 1); }
+.buddy span { transition: color .25s, transform .35s cubic-bezier(.3, 1.6, .5, 1); }
+.buddy:hover span { color: var(--c-ink, var(--ink)); transform: translateY(-2px) scale(1.06); }
+
+/* CTA heads: the one you point at pops up, its neighbours lean away. */
+.cta-heads img { cursor: pointer; transition: transform .4s cubic-bezier(.3, 1.6, .5, 1); }
+.cta-heads:hover img:nth-child(odd) { transform: rotate(-12deg) translateX(-4px); }
+.cta-heads:hover img:nth-child(even) { transform: rotate(12deg) translate(4px, 6px); }
+.cta-heads img:hover:nth-child(n) { transform: translateY(-16px) scale(1.18) rotate(0); }
+
+/* Footer links draw an underline. */
+footer nav a { background: linear-gradient(currentColor, currentColor) 0 100% / 0 2px no-repeat; transition: background-size .3s ease, color .2s; padding-bottom: 2px; }
+footer nav a:hover { background-size: 100% 2px; }
+
 @media (max-width: 520px) {
   .buddies { grid-template-columns: repeat(3, 1fr); gap: 12px; }
   .head { width: 88px; }
@@ -198,10 +283,27 @@ footer .brand img { width: 32px; height: 32px; border-radius: 9px; }
   .float .badge { --s: 62px !important; }
   .brand span { display: none; }
 }
+/* Touch screens keep :hover after a tap, so hover-only growth would stick and then spring back: switch it off there. */
+@media (hover: none) {
+  .lift.in:hover { transform: none; animation: none; box-shadow: 0 2px 0 rgba(41, 49, 67, .05), 0 12px 30px rgba(41, 49, 67, .07); }
+  .lift:hover .badge::before { transform: rotate(-7deg); }
+  .lift:hover .num { transform: none; background: var(--paper); color: var(--muted); }
+  .stage:hover .phone { --hs: 1; }
+  .float:hover .badge { transform: none; }
+  .head:hover { scale: 1; }
+  .buddy:hover .face { transform: none; }
+  .buddy:hover > span { transform: none; color: var(--ink); }
+  .cta-heads:hover img:nth-child(odd), .cta-heads img:hover:nth-child(odd) { transform: rotate(-8deg); }
+  .cta-heads:hover img:nth-child(even), .cta-heads img:hover:nth-child(even) { transform: rotate(8deg) translateY(6px); }
+  .mark:hover { animation: none; }
+  .key:hover svg { animation: none; }
+}
 @media (prefers-reduced-motion: reduce) {
-  .float, .head, .stage:hover .phone, .lift:hover, .lift:hover .badge img { animation: none; }
+  .float, .head, .lift:hover { animation: none; }
   .reveal { opacity: 1; transform: none; transition: none; }
-  .stage:hover { transform: none; }
+  .stage:hover .phone { --hs: 1; }
+  .mark:hover, .eyebrow:hover .lt, .key:hover svg { animation: none; }
+  .band, .band::after { transition: none; }
   html { scroll-behavior: auto; }
 }
 </style>
@@ -245,20 +347,20 @@ footer .brand img { width: 32px; height: 32px; border-radius: 9px; }
     <h2 class="reveal">Your steps, their whole world</h2>
     <p class="lead">No workouts to plan. Just walk like you always do, and your buddy feels every step.</p>
     <div class="steps" style="text-align: left">
-      <div class="card lift reveal" data-sparks="#3CC37A #7CC6EE #FFC83D" style="--g1: rgba(60, 195, 122, .28); --g2: rgba(124, 198, 238, .30)">
+      <div class="card lift reveal" data-fx="walk" style="--g1: rgba(60, 195, 122, .28); --g2: rgba(124, 198, 238, .30)">
         <span class="num">1</span>
         <span class="badge" style="--s: 76px; --t: #D7EAF4"><img src="assets/icons/icon-steps.png" alt=""></span>
         <h3>Walk</h3>
         <p>Your steps come from Apple Health, iPhone or Apple Watch. Every walk counts automatically.</p>
       </div>
-      <div class="card lift reveal" data-sparks="#F08A6C #F5B46B #F6A5C0" style="--g1: rgba(240, 138, 108, .28); --g2: rgba(246, 165, 192, .30)">
+      <div class="card lift reveal" data-fx="feed" style="--g1: rgba(240, 138, 108, .28); --g2: rgba(246, 165, 192, .30)">
         <span class="num">2</span>
         <span class="badge" style="--s: 76px; --t: #F5DDCB"><img src="assets/icons/care-feed.png" alt=""></span>
         <h3>Care</h3>
         <p>Breakfast, baths and playtime unlock as you walk. Your buddy shows how they feel.</p>
         <p class="note">Care never uses coins</p>
       </div>
-      <div class="card lift reveal" data-sparks="#FFC83D #B28DF0 #6FD3E8" style="--g1: rgba(255, 200, 61, .32); --g2: rgba(178, 141, 240, .28)">
+      <div class="card lift reveal" data-fx="grow" style="--g1: rgba(255, 200, 61, .32); --g2: rgba(178, 141, 240, .28)">
         <span class="num">3</span>
         <span class="badge" style="--s: 76px; --t: #FFF0C9"><img src="assets/icons/icon-journey-brightest-star.png" alt=""></span>
         <h3>Grow</h3>
@@ -405,19 +507,19 @@ footer .brand img { width: 32px; height: 32px; border-radius: 9px; }
       <h2 class="reveal">On your wrist and Home Screen</h2>
     </div>
     <div class="duo">
-      <div class="card lift reveal" data-sparks="#7CC6EE #FFC83D #5AA9F0" style="--g1: rgba(124, 198, 238, .32); --g2: rgba(255, 200, 61, .26)">
+      <div class="card lift reveal" data-fx="watch" style="--g1: rgba(124, 198, 238, .32); --g2: rgba(255, 200, 61, .26)">
         <span class="badge" style="--s: 76px; --t: #DDF0FF"><img src="assets/icons/icon-energy.png" alt=""></span>
         <div><h3>Apple Watch</h3><p>Check on your buddy and care for them from your wrist, with complications for your watch face.</p></div>
       </div>
-      <div class="card lift reveal" data-sparks="#F6A5C0 #FFC83D #F08A6C" style="--g1: rgba(246, 165, 192, .32); --g2: rgba(255, 200, 61, .26)">
+      <div class="card lift reveal" data-fx="mood" style="--g1: rgba(246, 165, 192, .32); --g2: rgba(255, 200, 61, .26)">
         <span class="badge" style="--s: 76px; --t: #FFE3EE"><img src="assets/icons/icon-mood.png" alt=""></span>
         <div><h3>Widgets</h3><p>Home Screen and Lock Screen widgets show today's steps and how your buddy is doing.</p></div>
       </div>
     </div>
     <div class="facts">
-      <div class="card lift fact reveal" data-sparks="#3CC37A #FFC83D #8FD88A" style="--g1: rgba(60, 195, 122, .28); --g2: rgba(255, 200, 61, .26)"><span class="badge" style="--s: 58px; --t: #E3F6E0"><img src="assets/icons/icon-trophy.png" alt=""></span><div><b>Daily recaps</b><span>A look back at every walk</span></div></div>
-      <div class="card lift fact reveal" data-sparks="#FFC83D #F5B46B #FFE07A" style="--g1: rgba(255, 200, 61, .34); --g2: rgba(245, 180, 107, .26)"><span class="badge" style="--s: 58px; --t: #FFF1C4"><img src="assets/icons/icon-coin.png" alt=""></span><div><b>1 step = 1 coin</b><span>Spend them in the Shop</span></div></div>
-      <div class="card lift fact reveal" data-sparks="#3CC37A #7CC6EE #B28DF0" style="--g1: rgba(124, 198, 238, .30); --g2: rgba(60, 195, 122, .24)"><span class="badge" style="--s: 58px; --t: #D7EAF4"><img src="assets/icons/icon-steps.png" alt=""></span><div><b>Private by design</b><span>Your steps stay on your devices</span></div></div>
+      <div class="card lift fact reveal" data-fx="trophy" style="--g1: rgba(60, 195, 122, .28); --g2: rgba(255, 200, 61, .26)"><span class="badge" style="--s: 58px; --t: #E3F6E0"><img src="assets/icons/icon-trophy.png" alt=""></span><div><b>Daily recaps</b><span>A look back at every walk</span></div></div>
+      <div class="card lift fact reveal" data-fx="coin" style="--g1: rgba(255, 200, 61, .34); --g2: rgba(245, 180, 107, .26)"><span class="badge" style="--s: 58px; --t: #FFF1C4"><img src="assets/icons/icon-coin.png" alt=""></span><div><b>1 step = 1 coin</b><span>Spend them in the Shop</span></div></div>
+      <div class="card lift fact reveal" data-fx="private" style="--g1: rgba(124, 198, 238, .30); --g2: rgba(60, 195, 122, .24)"><span class="badge" style="--s: 58px; --t: #D7EAF4"><img src="assets/icons/icon-steps.png" alt=""></span><div><b>Private by design</b><span>Your steps stay on your devices</span></div></div>
     </div>
   </div>
 </section>
@@ -459,16 +561,57 @@ if (APP_STORE_URL) document.querySelectorAll(".store").forEach(function (a) { a.
 
 // Scroll parallax: each phone tilts and drifts as it passes, its stickers and buddies float at their own depths.
 var stages = [].slice.call(document.querySelectorAll(".stage"));
+var EDGE_LAYERS = 24;
 var still = window.matchMedia("(prefers-reduced-motion: reduce)");
 stages.forEach(function (stage, i) {
   stage.dir = stage.closest(".flip") ? -1 : 1;
   stage.phone = stage.querySelector(".phone");
+  // Frame layers behind the screen, so the phone has a real edge when it turns.
+  stage.edges = [];
+  // Many thin layers so the side reads as one solid band; each is a little darker toward the back, like a lit metal frame.
+  for (var k = 1; k <= EDGE_LAYERS; k++) {
+    var edge = document.createElement("span");
+    var t = k / EDGE_LAYERS;
+    edge.className = "edge";
+    edge.style.setProperty("--shade", "rgb(" + [232 - 92 * t, 226 - 92 * t, 216 - 90 * t].map(Math.round).join(", ") + ")");
+    edge.setAttribute("aria-hidden", "true");
+    stage.phone.insertBefore(edge, stage.phone.firstChild);
+    stage.edges.push({ el: edge, k: k });
+  }
   stage.bits = [].slice.call(stage.querySelectorAll(".float, .head")).map(function (el, j) {
     // Alternate near and far layers so neighbours move against each other.
     return { el: el, depth: [1.25, -0.7, 0.95, -1.1, 0.6][(j + i) % 5] };
   });
 });
 var ticking = false;
+// A chunky, toy-like depth: about an eighth of the phone's width.
+function sizeEdges() {
+  stages.forEach(function (stage) {
+    var depth = stage.phone.offsetWidth * .13;
+    stage.edges.forEach(function (e) { e.el.style.setProperty("--z", (-depth * e.k / EDGE_LAYERS).toFixed(2) + "px"); });
+  });
+}
+sizeEdges();
+window.addEventListener("resize", sizeEdges);
+// Stickers and heads glide toward their scroll position instead of jumping with every scroll step.
+var gliding = false;
+function glide() {
+  var moving = false;
+  stages.forEach(function (stage) {
+    stage.bits.forEach(function (b) {
+      if (b.ty === undefined) return;
+      if (b.cy === undefined) { b.cy = b.ty; b.cr = b.tr; }
+      b.cy += (b.ty - b.cy) * .12;
+      b.cr += (b.tr - b.cr) * .12;
+      if (Math.abs(b.ty - b.cy) > .1 || Math.abs(b.tr - b.cr) > .02) moving = true;
+      else { b.cy = b.ty; b.cr = b.tr; }
+      b.el.style.setProperty("--py", b.cy.toFixed(2) + "px");
+      b.el.style.setProperty("--pr", b.cr.toFixed(3) + "deg");
+    });
+  });
+  gliding = moving;
+  if (moving) requestAnimationFrame(glide);
+}
 function parallax() {
   ticking = false;
   var vh = window.innerHeight;
@@ -484,50 +627,49 @@ function parallax() {
     s.setProperty("--rz", (p * 6 * stage.dir).toFixed(2) + "deg");
     s.setProperty("--ty", (-p * 40).toFixed(1) + "px");
     stage.bits.forEach(function (b) {
-      b.el.style.setProperty("--py", (-p * 110 * b.depth).toFixed(1) + "px");
-      b.el.style.setProperty("--pr", (p * 10 * b.depth).toFixed(2) + "deg");
+      b.ty = -p * 110 * b.depth;
+      b.tr = p * 10 * b.depth;
     });
   });
+  if (!gliding) { gliding = true; requestAnimationFrame(glide); }
 }
 function requestParallax() { if (!ticking) { ticking = true; requestAnimationFrame(parallax); } }
 window.addEventListener("scroll", requestParallax, { passive: true });
 window.addEventListener("resize", requestParallax);
 parallax();
 
-// Card sparkles: fine dust bursts from all around the card's edge on hover, keeps drifting while the pointer stays, and the card tilts toward it.
-[].slice.call(document.querySelectorAll("[data-sparks]")).forEach(function (card) {
-  var colors = card.dataset.sparks.split(" ");
-    var timer = null;
-  function spark() {
-    var w = card.offsetWidth, h = card.offsetHeight;
-    var el = document.createElement("span");
-    var kind = Math.random();
-    el.className = "spark" + (kind < .3 ? " star" : "");
-    // Start on a random point of the card's edge and drift outward from it, like fine dust around the glow.
-    var edge = Math.random() * 2 * (w + h), x, y, nx, ny;
-    if (edge < w) { x = edge; y = 0; nx = 0; ny = -1; }
-    else if (edge < w + h) { x = w; y = edge - w; nx = 1; ny = 0; }
-    else if (edge < 2 * w + h) { x = edge - w - h; y = h; nx = 0; ny = 1; }
-    else { x = 0; y = edge - 2 * w - h; nx = -1; ny = 0; }
-    var dist = 14 + Math.random() * 30, drift = (Math.random() - .5) * 30;
-    var size = kind < .3 ? 6 + Math.random() * 4 : 2 + Math.random() * 3;
-    el.style.left = x + "px";
-    el.style.top = y + "px";
-    el.style.setProperty("--x", (nx * dist + ny * drift).toFixed(1) + "px");
-    el.style.setProperty("--y", (ny * dist + nx * drift - 10).toFixed(1) + "px");
-    el.style.setProperty("--r", ((Math.random() - .5) * 180).toFixed(0) + "deg");
-    el.style.setProperty("--z", size.toFixed(1) + "px");
-    el.style.setProperty("--c", colors[Math.floor(Math.random() * colors.length)]);
-    el.style.setProperty("--d", (900 + Math.random() * 900).toFixed(0) + "ms");
-    el.addEventListener("animationend", function () { el.remove(); });
-    card.appendChild(el);
-  }
-  function burst(n) { for (var i = 0; i < n; i++) spark(); }
+// Card reactions: each card's sticker does something of its own and throws its own kind of particles.
+// Hover plays it and keeps a gentle repeat going; a tap on touch plays it once. The card still tilts toward a mouse.
+var HEART = { text: "\u2665" };
+var CARD_FX = {
+  walk: { ms: 700, frames: [{ translate: "0 0", rotate: "0deg" }, { translate: "-3px -6px", rotate: "-14deg" }, { translate: "0 0", rotate: "0deg" }, { translate: "3px -6px", rotate: "14deg" }, { translate: "0 0", rotate: "0deg" }],
+    first: { n: 6, kinds: ["foot"], colors: ["#3CC37A", "#20A26A", "#8FD88A"], size: [9, 13], dist: 70, spread: 1.4, spin: 25 }, more: 2 },
+  feed: { ms: 600, frames: [{ rotate: "0deg", scale: "1" }, { rotate: "-9deg", scale: "1.08 .92" }, { rotate: "8deg", scale: ".95 1.06" }, { rotate: "-5deg", scale: "1" }, { rotate: "0deg", scale: "1" }],
+    first: { n: 10, kinds: ["kibble", "kibble", "kibble", HEART], colors: ["#8B5A2B", "#A86B35", "#C98B4B", "#FF6F91"], size: [7, 11], dist: 70, rise: 10, spread: 1.6, spin: 200 }, more: 3 },
+  grow: { ms: 900, frames: [{ rotate: "0deg", scale: "1" }, { rotate: "200deg", scale: "1.25" }, { rotate: "360deg", scale: "1" }],
+    first: { n: 12, kinds: ["star", "star", "ring"], colors: ["#B28DF0", "#6FD3E8", "#FFC83D"], size: [8, 15], dist: 85, spread: 3.6, spin: 180 }, more: 3 },
+  watch: { ms: 380, frames: [{ translate: "0 0", scale: "1" }, { translate: "-3px 0", scale: "1.15" }, { translate: "3px -1px", scale: "1.15" }, { translate: "-2px 1px", scale: "1.1" }, { translate: "0 0", scale: "1" }],
+    first: { n: 10, kinds: ["bolt", "bolt", "dot"], colors: ["#FFC83D", "#FFB020", "#7CC6EE"], size: [9, 15], dist: 80, spread: 6.28, spin: 40 }, more: 3 },
+  mood: { ms: 650, frames: [{ translate: "0 0", rotate: "0deg" }, { translate: "0 -8px", rotate: "-10deg" }, { translate: "0 0", rotate: "8deg" }, { translate: "0 -4px", rotate: "-5deg" }, { translate: "0 0", rotate: "0deg" }],
+    first: { n: 6, kinds: [HEART], colors: ["#FF6F91", "#FF8FAB", "#F6A5C0"], size: [16, 24], dist: 75, rise: 10, spread: 1.4, spin: 25 }, more: 2 },
+  trophy: { ms: 800, frames: [{ translate: "0 0", rotate: "0deg", scale: "1" }, { translate: "0 -9px", rotate: "-8deg", scale: "1.15" }, { translate: "0 -9px", rotate: "8deg", scale: "1.15" }, { translate: "0 0", rotate: "0deg", scale: "1" }],
+    first: { n: 16, kinds: ["confetti"], colors: ["#FF6F91", "#FFC83D", "#3CC37A", "#7CC6EE", "#B28DF0"], size: [8, 12], dist: 95, spread: 2.6, spin: 540 }, more: 4 },
+  coin: { ms: 800, frames: [{ transform: "rotateY(0deg)" }, { transform: "rotateY(720deg)" }],
+    first: { n: 8, kinds: ["dot", "star"], colors: ["#FFC83D", "#FFE07A", "#fff"], size: [5, 11], dist: 60 }, plus: true, more: 2 },
+  private: { ms: 900, frames: [{ translate: "0 0" }, { translate: "-4px -2px" }, { translate: "0 0" }, { translate: "4px -2px" }, { translate: "0 0" }],
+    first: { n: 5, kinds: ["foot"], colors: ["#3CC37A", "#8FD88A"], size: [7, 10], dist: 50, spread: 1.2, spin: 20 }, more: 2 }
+};
+[].slice.call(document.querySelectorAll("[data-fx]")).forEach(function (card) {
+  var fxSpec = CARD_FX[card.dataset.fx];
+  var badge = card.querySelector(".badge");
+  var timer = null;
+  function play(first) { playFx(fxSpec, badge, first); }
   card.addEventListener("pointerenter", function (e) {
-    if (still.matches) return;
-    burst(40);
-    if (e.pointerType === "mouse" && !timer) timer = setInterval(function () { burst(4); }, 90);
+    if (e.pointerType !== "mouse") return;
+    play(true);
+    if (!timer) timer = setInterval(function () { play(false); }, fxSpec.ms + 350);
   });
+  card.addEventListener("click", function (e) { if (e.pointerType && e.pointerType !== "mouse") play(true); });
   card.addEventListener("pointermove", function (e) {
     if (still.matches || e.pointerType !== "mouse") return;
     var c = card.getBoundingClientRect();
@@ -536,25 +678,356 @@ parallax();
   });
   card.addEventListener("pointerleave", function () {
     clearInterval(timer); timer = null;
-    // The dust leaves with the pointer: whatever is still in the air fades out fast.
-    [].slice.call(card.querySelectorAll(".spark")).forEach(function (el) {
-      var fade = el.animate([{ opacity: getComputedStyle(el).opacity }, { opacity: 0 }], { duration: 220, easing: "ease-out", fill: "forwards" });
-      fade.onfinish = function () { el.remove(); };
-    });
     card.style.removeProperty("--tx"); card.style.removeProperty("--ty");
   });
 });
 
-// Phone tilt: each phone leans toward the pointer while hovered.
-stages.forEach(function (stage) {
-  stage.addEventListener("pointermove", function (e) {
-    if (still.matches || e.pointerType !== "mouse") return;
-    var c = stage.getBoundingClientRect();
-    stage.style.setProperty("--tx", (((e.clientY - c.top) / c.height - .5) * -10).toFixed(2) + "deg");
-    stage.style.setProperty("--ty", (((e.clientX - c.left) / c.width - .5) * 14).toFixed(2) + "deg");
+// ---------- Play: little reactions everywhere ----------
+var fx = document.createElement("div");
+fx.className = "fx";
+fx.setAttribute("aria-hidden", "true");
+document.body.appendChild(fx);
+function rand(a, b) { return a + Math.random() * (b - a); }
+function pick(list) { return list[Math.floor(Math.random() * list.length)]; }
+// Throws a handful of pieces from a screen point: dots, stars, text like hearts or "+1", or little images.
+// Particles live in a layer pinned to the thing that threw them, so they move with it when the page scrolls.
+var bursts = [];
+// Pin to the buddy's steady holder (its card, row or phone stage), not the buddy itself: the buddy's own
+// squash and head wiggle would otherwise shake the hearts and bubbles with it.
+function steady(el) { return el.closest && el.closest(".buddy, .cta-heads, .stage") || el; }
+function pinTo(anchor, hold) {
+  anchor = steady(anchor);
+  var r = anchor.getBoundingClientRect();
+  var box = document.createElement("span");
+  box.className = "burst";
+  fx.appendChild(box);
+  bursts.push({ box: box, anchor: anchor, x: r.left, y: r.top, hold: !!hold });
+  if (bursts.length === 1) requestAnimationFrame(follow);
+  return box;
+}
+function follow() {
+  bursts = bursts.filter(function (b) {
+    if (!b.hold && !b.box.childElementCount) { b.box.remove(); return false; }
+    var r = b.anchor.getBoundingClientRect();
+    b.box.style.transform = "translate(" + (r.left - b.x) + "px, " + (r.top - b.y) + "px)";
+    return true;
   });
-  stage.addEventListener("pointerleave", function () { stage.style.removeProperty("--tx"); stage.style.removeProperty("--ty"); });
+  if (bursts.length) requestAnimationFrame(follow);
+}
+function release(box) { bursts.forEach(function (b) { if (b.box === box) b.hold = false; }); }
+function puff(x, y, o, layer) {
+  if (still.matches) return;
+  for (var i = 0; i < o.n; i++) {
+    var el = document.createElement("span");
+    var kind = o.kinds ? pick(o.kinds) : "dot";
+    el.className = "pop " + (kind.img ? "" : kind.text ? "text" : kind);
+    if (kind.img) { var im = new Image(); im.src = kind.img; el.appendChild(im); }
+    if (kind.text) el.textContent = kind.text;
+    var a = -Math.PI / 2 + rand(-.5, .5) * (o.spread || 2.2);
+    var d = (o.dist || 80) * rand(.55, 1.15);
+    el.style.left = x + "px";
+    el.style.top = y + "px";
+    el.style.setProperty("--x", (Math.cos(a) * d).toFixed(1) + "px");
+    el.style.setProperty("--y", (Math.sin(a) * d - (o.rise || 0)).toFixed(1) + "px");
+    el.style.setProperty("--r", rand(-1, 1) * (o.spin || 120) + "deg");
+    el.style.setProperty("--z", (kind.size || rand(o.size[0], o.size[1])).toFixed(1) + "px");
+    el.style.setProperty("--c", pick(o.colors || ["#FFC83D"]));
+    el.style.setProperty("--d", rand(700, 1100).toFixed(0) + "ms");
+    el.addEventListener("animationend", function () { this.remove(); });
+    (layer || fx).appendChild(el);
+  }
+}
+function center(el) { var r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }
+// Tap animations are added on top of whatever the buddy is already doing (hover growth, floating, its tilt),
+// so nothing snaps back to a starting pose, and quick repeat taps simply stack.
+var ON_TOP = { composite: "add" };
+function squish(el, soft) {
+  if (still.matches || !el.animate) return;
+  var k = soft ? [["1", "1.07 .93", ".97 1.03", "1"], 450] : [["1", "1.22 .82", ".88 1.14", "1.06 .96", "1"], 600];
+  el.animate(k[0].map(function (v) { return { scale: v }; }), Object.assign({ duration: k[1], easing: "ease-out" }, ON_TOP));
+}
+var COIN = "assets/icons/icon-coin.png";
+var heartColors = ["#FF6F91", "#FF8FAB", "#F6A5C0", "#FF5C8A"];
+// Hearts pop out one after another, tak tak tak, swaying left and right as they rise.
+function heartTrail(x, y, anchor) {
+  if (still.matches) return;
+  var box = pinTo(anchor, true);
+  for (var i = 0; i < 6; i++) (function (i) {
+    setTimeout(function () {
+      puff(x + (i % 2 ? 1 : -1) * rand(4, 16), y, { n: 1, kinds: [{ text: "\u2665" }], colors: heartColors, size: [22, 32], dist: 80 + i * 10, rise: 10, spread: .6, spin: 25 }, box);
+      if (i === 5) release(box);
+    }, i * 105);
+  })(i);
+}
+
+// Floating stickers: a tap plays a reaction that fits the sticker, with its own particles (like the cards).
+var STICKER_FX = {
+  "icon-coin": CARD_FX.coin, "care-feed": CARD_FX.feed, "care-feed-fox": CARD_FX.feed, "icon-journey-brightest-star": CARD_FX.grow,
+  "icon-health": { ms: 700, frames: [{ scale: "1" }, { scale: "1.25" }, { scale: ".95" }, { scale: "1.18" }, { scale: "1" }],
+    first: { n: 6, kinds: [HEART], colors: ["#FF5C8A", "#FF8FAB", "#F6A5C0"], size: [16, 24], dist: 75, rise: 10, spread: 1.6, spin: 25 } },
+  "care-wash": { ms: 700, frames: [{ rotate: "0deg" }, { rotate: "-10deg" }, { rotate: "10deg" }, { rotate: "-6deg" }, { rotate: "0deg" }],
+    first: { n: 10, kinds: ["ring", "ring", "dot"], colors: ["#7CC6EE", "#BFE6FA", "#ffffff"], size: [7, 16], dist: 90, rise: 20, spread: 1.8, spin: 0 } },
+  "care-play": { ms: 650, frames: [{ translate: "0 0", scale: "1" }, { translate: "0 -14px", scale: "1" }, { translate: "0 0", scale: "1.15 .85" }, { translate: "0 -5px", scale: "1" }, { translate: "0 0", scale: "1" }],
+    first: { n: 9, kinds: ["dot", "star"], colors: ["#FF6F91", "#FFC83D", "#3CC37A", "#7CC6EE"], size: [6, 11], dist: 70, spread: 2.8 } },
+  "care-bedtime": { ms: 1100, frames: [{ rotate: "0deg" }, { rotate: "-8deg" }, { rotate: "6deg" }, { rotate: "0deg" }],
+    first: { n: 3, kinds: [{ text: "z" }, { text: "Z" }], colors: ["#8A74C8", "#B28DF0"], size: [16, 24], dist: 70, rise: 10, spread: .9, spin: 20 } },
+  "icon-rest-day": { ms: 1100, frames: [{ rotate: "0deg" }, { rotate: "-8deg" }, { rotate: "6deg" }, { rotate: "0deg" }],
+    first: { n: 3, kinds: [{ text: "z" }, { text: "Z" }], colors: ["#8A74C8", "#B28DF0"], size: [16, 24], dist: 70, rise: 10, spread: .9, spin: 20 } },
+  "icon-achievement-treasures-10": { ms: 800, frames: [{ rotate: "0deg", scale: "1" }, { rotate: "-12deg", scale: "1.18" }, { rotate: "10deg", scale: "1.18" }, { rotate: "0deg", scale: "1" }],
+    first: { n: 10, kinds: ["star", "star", "dot"], colors: ["#FFC83D", "#FFE07A", "#ffffff"], size: [7, 14], dist: 80, spread: 3.2 } },
+  "icon-achievement-streak-7": { ms: 700, frames: [{ scale: "1" }, { scale: ".95 1.12" }, { scale: "1.05 .96" }, { scale: ".97 1.08" }, { scale: "1" }],
+    first: { n: 8, kinds: ["dot"], colors: ["#FFB020", "#FF7A3D", "#FFE07A"], size: [4, 8], dist: 80, rise: 25, spread: 1, spin: 0 } },
+  "icon-streak": { ms: 700, frames: [{ scale: "1" }, { scale: ".94 1.15" }, { scale: "1.06 .95" }, { scale: ".96 1.1" }, { scale: "1" }],
+    first: { n: 10, kinds: ["dot"], colors: ["#FFB020", "#FF7A3D", "#FF5C3A", "#FFE07A"], size: [4, 9], dist: 90, rise: 30, spread: 1, spin: 0 } },
+  "icon-world-map": { ms: 800, frames: [{ rotate: "0deg", scale: "1" }, { rotate: "-6deg", scale: "1.12 .94" }, { rotate: "5deg", scale: "1.1" }, { rotate: "0deg", scale: "1" }],
+    first: { n: 6, kinds: ["foot"], colors: ["#3CC37A", "#20A26A"], size: [8, 11], dist: 70, spread: 2.2, spin: 60 } },
+  "icon-journey-butterfly": { ms: 900, frames: [{ scale: "1", translate: "0 0" }, { scale: ".55 1", translate: "0 -5px" }, { scale: "1", translate: "0 -8px" }, { scale: ".55 1", translate: "0 -5px" }, { scale: "1", translate: "0 0" }],
+    first: { n: 8, kinds: ["dot", "star", HEART], colors: ["#F6A5C0", "#B28DF0", "#7CC6EE"], size: [6, 13], dist: 80, rise: 10, spread: 2.4 } },
+  "flat-shop-decor-hanging-plant": { ms: 1100, frames: [{ rotate: "0deg" }, { rotate: "9deg" }, { rotate: "-7deg" }, { rotate: "4deg" }, { rotate: "0deg" }],
+    first: { n: 6, kinds: ["leaf"], colors: ["#3CC37A", "#8FD88A", "#20A26A"], size: [8, 12], dist: 80, rise: -40, spread: 2.2, spin: 240 } },
+  "accessory-wizard": { ms: 800, frames: [{ rotate: "0deg" }, { rotate: "-15deg" }, { rotate: "360deg" }],
+    first: { n: 12, kinds: ["star", "star", "dot"], colors: ["#B28DF0", "#8A74C8", "#FFE07A"], size: [7, 14], dist: 85, spread: 6.28, spin: 200 } },
+  "flat-shop-decor-mushroom-lamp": { ms: 900, frames: [{ scale: "1" }, { scale: "1.15" }, { scale: "1" }],
+    first: { n: 8, kinds: ["dot"], colors: ["#FFE07A", "#FFF3B0", "#FFC83D"], size: [4, 8], dist: 70, rise: 20, spread: 2, spin: 0 } },
+  "accessory-crown": { ms: 700, frames: [{ translate: "0 0", rotate: "0deg" }, { translate: "0 -12px", rotate: "-10deg" }, { translate: "0 0", rotate: "6deg" }, { translate: "0 0", rotate: "0deg" }],
+    first: { n: 10, kinds: ["star", "dot"], colors: ["#FFC83D", "#FFE07A", "#ffffff"], size: [6, 13], dist: 75, spread: 3 } }
+};
+function playFx(spec, badge, first) {
+  if (still.matches || !spec) return;
+  var art = badge.querySelector("img");
+  if (art.animate) art.animate(spec.frames, Object.assign({ duration: spec.ms, easing: "ease-in-out" }, ON_TOP));
+  var c = center(badge), box = pinTo(badge);
+  var burst = Object.assign({}, spec.first);
+  if (!first) burst.n = spec.more || 2;
+  puff(c[0], c[1], burst, box);
+  if (first && spec.plus) puff(c[0], c[1], { n: 1, kinds: [{ text: "+1" }], colors: ["#FFB020"], size: [24, 24], dist: 60, spread: .2, spin: 0 }, box);
+}
+[].slice.call(document.querySelectorAll(".float .badge")).forEach(function (badge) {
+  var name = badge.querySelector("img").getAttribute("src").replace("assets/icons/", "").replace(".png", "");
+  badge.addEventListener("click", function () { playFx(STICKER_FX[name], badge, true); });
 });
+
+// Heads beside the phones: tap for a squish and hearts. The goal chest shakes and spills coins.
+[].slice.call(document.querySelectorAll(".head")).forEach(function (head) {
+  var chest = /goal-chest/.test(head.getAttribute("src"));
+  head.addEventListener("click", function () {
+    var c = center(head);
+    if (chest) {
+      if (!still.matches && head.animate) head.animate([{ translate: "0 0" }, { translate: "-6px 0" }, { translate: "6px -4px" }, { translate: "-4px 0" }, { translate: "3px -2px" }, { translate: "0 0" }], Object.assign({ duration: 450 }, ON_TOP));
+      setTimeout(function () { puff(c[0], c[1] - 20, { n: 10, kinds: [{ img: COIN, size: 30 }, { img: COIN, size: 22 }, "star"], colors: ["#FFC83D", "#fff"], size: [8, 12], dist: 150, rise: 30, spread: 1.7, spin: 300 }, pinTo(head)); }, 300);
+    } else {
+      squish(head);
+      heartTrail(c[0], c[1] - 30, head);
+    }
+  });
+});
+document.querySelectorAll(".cta-heads img").forEach(function (head) {
+  head.addEventListener("click", function () { var c = center(head); squish(head); heartTrail(c[0], c[1] - 20, head); });
+});
+
+// Buddy picker: while the section is on screen, every buddy turns to watch the pointer; a tap gives a soft squash and hearts.
+[].slice.call(document.querySelectorAll(".buddy")).forEach(function (buddy) {
+  var face = buddy.querySelector(".face");
+  buddy.style.setProperty("--c-ink", face.style.getPropertyValue("--c"));
+  buddy.addEventListener("click", function () { var c = center(face); squish(face, true); heartTrail(c[0], c[1] - 30, face); });
+});
+var buddyGrid = document.querySelector(".buddies");
+if (buddyGrid) {
+  document.addEventListener("pointermove", function (e) {
+    if (still.matches || e.pointerType !== "mouse") return;
+    var g = buddyGrid.getBoundingClientRect();
+    if (g.bottom < 0 || g.top > window.innerHeight) return;
+    buddyGrid.querySelectorAll(".face").forEach(function (face) {
+      var c = center(face), dx = e.clientX - c[0], dy = e.clientY - c[1], len = Math.max(1, Math.hypot(dx, dy));
+      var k = Math.min(1, len / 220);
+      var img = face.querySelector("img");
+      img.style.setProperty("--lx", (dx / len * k * 11).toFixed(1) + "px");
+      img.style.setProperty("--ly", (dy / len * k * 9).toFixed(1) + "px");
+      img.style.setProperty("--lr", (dx / len * k * 9).toFixed(1) + "deg");
+    });
+  });
+}
+
+// Eyebrow pills: split into letters so they can hop in turn.
+[].slice.call(document.querySelectorAll(".eyebrow")).forEach(function (pill) {
+  var text = pill.textContent;
+  pill.setAttribute("aria-label", text);
+  pill.textContent = "";
+  text.split("").forEach(function (ch, i) {
+    var lt = document.createElement("span");
+    lt.className = "lt";
+    lt.textContent = ch;
+    lt.setAttribute("aria-hidden", "true");
+    lt.style.setProperty("--i", i);
+    pill.appendChild(lt);
+  });
+});
+
+// App Store keys lean toward the pointer, like a magnet.
+[].slice.call(document.querySelectorAll(".key")).forEach(function (key) {
+  key.addEventListener("pointermove", function (e) {
+    if (still.matches || e.pointerType !== "mouse") return;
+    var c = center(key);
+    key.style.setProperty("--mx", ((e.clientX - c[0]) * .18).toFixed(1) + "px");
+    key.style.setProperty("--my", ((e.clientY - c[1]) * .25).toFixed(1) + "px");
+  });
+  key.addEventListener("pointerleave", function () { key.style.removeProperty("--mx"); key.style.removeProperty("--my"); });
+});
+
+// Bands: the glow and paw prints drift after the pointer.
+[].slice.call(document.querySelectorAll(".band")).forEach(function (band) {
+  band.addEventListener("pointermove", function (e) {
+    if (still.matches || e.pointerType !== "mouse") return;
+    var r = band.getBoundingClientRect(), dx = e.clientX - r.left - r.width / 2, dy = e.clientY - r.top - r.height / 2;
+    band.style.setProperty("--sx", (dx * .3).toFixed(0) + "px");
+    band.style.setProperty("--sy", (dy * .3).toFixed(0) + "px");
+    band.style.setProperty("--bx", (dx * -.04).toFixed(1) + "px");
+    band.style.setProperty("--by", (dy * -.04).toFixed(1) + "px");
+  });
+});
+
+// Everywhere: the pointer leaves a trail of faint paw prints, left, right, left; white over the coloured bands.
+// They sit on the page itself, under the buddies, circles, stickers, cards and phones.
+var lastPaw = null, pawSide = 1, pawLayer = null;
+document.addEventListener("pointermove", function (e) {
+  if (still.matches || e.pointerType !== "mouse") return;
+  if (!lastPaw) { lastPaw = [e.clientX, e.clientY]; return; }
+  var dx = e.clientX - lastPaw[0], dy = e.clientY - lastPaw[1], len = Math.hypot(dx, dy);
+  if (len < 70) return;
+  pawSide = -pawSide;
+  var nx = -dy / len, ny = dx / len;
+  var px = e.clientX + nx * 9 * pawSide, py = e.clientY + ny * 9 * pawSide;
+  lastPaw = [e.clientX, e.clientY];
+  var el = document.createElement("span");
+  el.className = "pop paw" + (e.target.closest && e.target.closest(".band") ? " light" : "");
+  el.style.left = (px + window.scrollX) + "px";
+  el.style.top = (py + window.scrollY) + "px";
+  el.style.setProperty("--z", "22px");
+  el.style.setProperty("--r", (Math.atan2(dy, dx) * 180 / Math.PI + 90).toFixed(0) + "deg");
+  el.addEventListener("animationend", function () { el.remove(); });
+  if (!pawLayer) {
+    pawLayer = document.createElement("div");
+    pawLayer.className = "paws";
+    pawLayer.setAttribute("aria-hidden", "true");
+    document.body.appendChild(pawLayer);
+  }
+  pawLayer.appendChild(el);
+});
+document.documentElement.addEventListener("pointerleave", function () { lastPaw = null; });
+
+// Blinking: a buddy on screen blinks every few tenths of a second, so someone is always blinking (the app's blink art).
+var blinkers = [].slice.call(document.querySelectorAll('img[src^="assets/heads/head-"]')).map(function (img) {
+  var open = img.getAttribute("src"), shut = open.replace(".png", "-blink.png");
+  new Image().src = shut;
+  return { img: img, open: open, shut: shut };
+});
+function blinkOnce(b, then) {
+  if (b.held) return;
+  b.img.src = b.shut;
+  setTimeout(function () { if (!b.held) b.img.src = b.open; if (then) setTimeout(then, 120); }, 130);
+}
+// What each buddy says when tapped: five little lines of its own.
+var SAYS = {
+  mochi: ["Woof!", "Arf arf!", "Walkies?", "Tail wag!", "Best buddy!"],
+  cat: ["Purr\u2026", "Mrrp!", "Meow?", "Pet me more", "Nap time?"],
+  fox: ["Yip yip!", "Heehee!", "Sneaky!", "Fluffy tail!", "Let's explore!"],
+  raccoon: ["Chitter!", "Snack?", "Shiny!", "Treasure?", "Mine now!"],
+  bird: ["Tweet!", "Chirp chirp!", "Sing along!", "Flap flap!", "Hello sky!"],
+  rabbit: ["Thump thump!", "Nibble!", "Carrot?", "Hop hop!", "Boing!"],
+  otter: ["Squeak!", "Splash!", "Hold paws?", "Shell time!", "Wheee!"],
+  panda: ["Munch munch", "Bamboo?", "Roly-poly!", "Hug me!", "Sleepy\u2026"],
+  koala: ["Mmm\u2026 hi!", "Cuddle?", "Eucalyptus!", "So cozy", "Five more minutes"],
+  hamster: ["Nom nom!", "Squeak!", "Cheeks full!", "Wheel time!", "Seeds?"],
+  penguin: ["Waddle!", "Honk!", "Slide!", "Chilly!", "Fish please!"],
+  sprout: ["Bloop!", "Grow grow!", "Sunshine!", "Water me?", "Leafy hi!"]
+};
+function say(b) {
+  if (still.matches) return;
+  if (b.bubble) b.bubble.remove();
+  var name = b.open.replace("assets/heads/head-", "").replace(".png", "");
+  var words = SAYS[name];
+  if (!words) return;
+  var face = b.img.closest(".face") || b.img, r = face.getBoundingClientRect();
+  var bubble = document.createElement("span");
+  bubble.className = "say";
+  // Never the same line twice in a row.
+  var line = pick(words.filter(function (w) { return w !== b.lastSaid; }));
+  b.lastSaid = line;
+  bubble.textContent = line;
+  bubble.style.left = (r.left + r.width / 2) + "px";
+  bubble.style.top = (r.top + 4) + "px";
+  bubble.addEventListener("animationend", function () { bubble.remove(); if (b.bubble === bubble) b.bubble = null; });
+  pinTo(face).appendChild(bubble);
+  b.bubble = bubble;
+}
+// Being petted: a happy little side-to-side head wiggle that settles, around the buddy's own tilt.
+function wiggle(img) {
+  if (still.matches || !img.animate) return;
+  img.animate([0, -12, 10, -7, 4, 0].map(function (d) { return { rotate: d + "deg" }; }), Object.assign({ duration: 700, easing: "ease-in-out" }, ON_TOP));
+}
+// A tapped buddy closes its eyes happily for a moment, longer than a blink, and says something.
+blinkers.forEach(function (b) {
+  var target = b.img.closest(".buddy") || b.img;
+  target.addEventListener("click", function () {
+    say(b);
+    wiggle(b.img);
+    clearTimeout(b.release);
+    b.held = true;
+    b.img.src = b.shut;
+    b.release = setTimeout(function () { b.held = false; b.img.src = b.open; }, 700);
+  });
+});
+// One at a time, never overlapping, and never the same buddy as the last few.
+var recentBlinks = [];
+function blinkNext() {
+  var vh = window.innerHeight;
+  var seen = blinkers.filter(function (b) {
+    var r = b.img.getBoundingClientRect();
+    return r.bottom > 0 && r.top < vh && r.width;
+  });
+  var fresh = seen.filter(function (b) { return !b.held && recentBlinks.indexOf(b) < 0; });
+  var b = fresh.length ? pick(fresh) : null;
+  if (b) {
+    blinkOnce(b);
+    recentBlinks.push(b);
+    if (recentBlinks.length > Math.min(3, seen.length - 1)) recentBlinks.shift();
+  }
+  // Each blink takes 0.13 s, so the next one starts only after this one has opened again.
+  setTimeout(blinkNext, rand(200, 320));
+}
+if (!still.matches && blinkers.length) setTimeout(blinkNext, 800);
+
+// Sticker outline, as round and solid as the app's StickerArt: grow the art's shape, soften it, then cut it back
+// into a crisp white edge. One SVG filter per outline width; the CSS drop-shadows stay as a fallback.
+(function () {
+  var NS = "http://www.w3.org/2000/svg";
+  var svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("width", "0");
+  svg.setAttribute("height", "0");
+  svg.setAttribute("aria-hidden", "true");
+  svg.style.position = "absolute";
+  document.body.appendChild(svg);
+  var made = {};
+  function filterFor(o) {
+    var key = (Math.round(o * 2) / 2).toFixed(1), id = "sticker-" + key.replace(".", "-");
+    if (!made[id]) {
+      made[id] = true;
+      var r = Math.max(.5, key - .4);
+      svg.insertAdjacentHTML("beforeend",
+        '<filter id="' + id + '" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">' +
+        '<feMorphology in="SourceAlpha" operator="dilate" radius="' + r + '" result="grow"/>' +
+        '<feGaussianBlur in="grow" stdDeviation="1" result="soft"/>' +
+        '<feComponentTransfer in="soft" result="edge"><feFuncA type="linear" slope="3" intercept="-.35"/></feComponentTransfer>' +
+        '<feFlood flood-color="#fff"/><feComposite in2="edge" operator="in" result="white"/>' +
+        '<feMerge><feMergeNode in="white"/><feMergeNode in="SourceGraphic"/></feMerge></filter>');
+    }
+    return "url(#" + id + ")";
+  }
+  [].slice.call(document.querySelectorAll(".badge")).forEach(function (badge) {
+    var size = parseFloat(getComputedStyle(badge).width) || 88;
+    badge.querySelector("img").style.filter = filterFor(size * .045);
+  });
+})();
 
 // Highlighted words type themselves in as their heading scrolls into view.
 if ("IntersectionObserver" in window && !still.matches) {
@@ -578,9 +1051,18 @@ if ("IntersectionObserver" in window && !still.matches) {
       typeIn(e.target);
     });
   }, { threshold: .4 });
-  marks.forEach(function (mark) { typer.observe(mark); });
+  marks.forEach(function (mark) {
+    typer.observe(mark);
+    // Pointing at a word (or tapping it) types it again once it has finished.
+    mark.addEventListener("pointerenter", function () {
+      if (mark.typing || mark.classList.contains("wait")) return;
+      mark.letters.forEach(function (ch) { ch.classList.remove("on"); });
+      typeIn(mark);
+    });
+  });
 }
 function typeIn(mark) {
+  mark.typing = true;
   var caret = document.createElement("span");
   caret.className = "caret";
   caret.setAttribute("aria-hidden", "true");
@@ -592,7 +1074,7 @@ function typeIn(mark) {
     ch.classList.add("on");
     mark.insertBefore(caret, ch.nextSibling);
     if (i < mark.letters.length) setTimeout(next, 45 + Math.random() * 55);
-    else setTimeout(function () { caret.remove(); }, 1100);
+    else setTimeout(function () { caret.remove(); mark.typing = false; }, 1100);
   }, 90);
 }
 
