@@ -74,12 +74,24 @@ header { position: absolute; inset: 0 0 auto; z-index: 10; }
 h1, h2 { font-weight: 950; letter-spacing: -1.5px; line-height: 1.05; margin: 0; }
 h1 { font-size: clamp(40px, 5.6vw, 70px); }
 h2 { font-size: clamp(36px, 5.2vw, 62px); }
-.mark { display: inline-block; padding: 0 .2em .06em; border-radius: .2em; transform: rotate(-2.5deg); background: var(--mark); color: var(--mark-ink); box-shadow: 0 .07em 0 rgba(0, 0, 0, .10); }
+.mark { display: inline-block; padding: 0 .2em .06em; border-radius: .2em; transform: rotate(-2.5deg); background: var(--mark); color: var(--mark-ink); box-shadow: 0 .07em 0 rgba(0, 0, 0, .10); transition: transform .55s cubic-bezier(.2, 1.6, .4, 1), opacity .25s ease; }
+.mark.wait { opacity: 0; transform: rotate(-12deg) scale(.4); }
+/* Typing: the badge springs in first, then its word types itself letter by letter behind a blinking caret. */
+.mark .ch { opacity: 0; }
+.mark .ch.on { opacity: 1; }
+.caret { display: inline-block; position: relative; width: 0; }
+.caret::after { content: ""; position: absolute; left: .03em; top: -.82em; height: .9em; width: .07em; border-radius: .04em; background: currentColor; animation: blink .75s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
 .sub { font-size: clamp(18px, 2vw, 22px); font-weight: 750; line-height: 1.4; margin: 20px 0 0; max-width: 30em; opacity: .95; }
 .copy .key { margin-top: 30px; }
 
 /* ---------- Phone ---------- */
-.stage { position: relative; justify-self: center; width: min(340px, 78vw); }
+.stage { position: relative; justify-self: center; width: min(340px, 78vw); transition: transform .5s cubic-bezier(.2, .9, .3, 1.3); }
+/* Hover: like the how-it-works cards, the phone and its stickers tilt toward the pointer, lift, and the phone glows. */
+.stage:hover { transition: transform .18s ease-out; transform: perspective(1100px) translateY(-12px) rotateX(var(--tx, 0deg)) rotateY(var(--ty, 0deg)) scale(1.02); }
+.stage .phone { transition: box-shadow .5s ease; }
+.stage:hover .phone { box-shadow: 0 0 0 3px #EFEAE2, 0 0 0 4px rgba(0, 0, 0, .10), 0 48px 80px rgba(30, 20, 60, .34), 0 0 40px 6px rgba(255, 255, 255, .55), 0 0 110px 26px rgba(255, 255, 255, .35); animation: phone-glow 1.8s ease-in-out .5s infinite alternate; }
+@keyframes phone-glow { to { box-shadow: 0 0 0 3px #EFEAE2, 0 0 0 4px rgba(0, 0, 0, .10), 0 48px 80px rgba(30, 20, 60, .34), 0 0 54px 10px rgba(255, 255, 255, .7), 0 0 140px 40px rgba(255, 255, 255, .42); } }
 .phone { position: relative; background: #15161A; border-radius: 48px; padding: 9px; box-shadow: 0 0 0 3px #EFEAE2, 0 0 0 4px rgba(0, 0, 0, .10), 0 40px 70px rgba(30, 20, 60, .32), 0 14px 24px rgba(30, 20, 60, .18); transform: perspective(1000px) translate3d(0, var(--ty, 0px), 0) rotate(calc(var(--r, 0deg) + var(--rz, 0deg))) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); will-change: transform; }
 .phone img { width: 100%; aspect-ratio: 1206 / 2622; object-fit: cover; border-radius: 40px; background: #EEE; }
 .head { position: absolute; z-index: 4; width: 120px; filter: drop-shadow(0 16px 20px rgba(40, 30, 70, .28)); animation: bob 6s ease-in-out infinite; transform: translate3d(0, var(--py, 0px), 0) rotate(var(--pr, 0deg)); will-change: transform; }
@@ -142,6 +154,33 @@ footer .brand img { width: 32px; height: 32px; border-radius: 9px; }
 /* Reveal */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s cubic-bezier(.2, .9, .3, 1.1); }
 .reveal.in { opacity: 1; transform: none; }
+.lift { position: relative; transition: opacity .6s ease, transform .5s cubic-bezier(.2, .9, .3, 1.3), box-shadow .5s ease; }
+/* Hover: the card tilts toward the pointer, lifts, and glows softly in its own colour from behind. */
+.lift.in:hover { transition: opacity .6s ease, transform .18s ease-out, box-shadow .5s ease; transform: perspective(900px) translateY(-10px) rotateX(var(--tx, 0deg)) rotateY(var(--ty, 0deg)) scale(1.02);
+  box-shadow: 0 2px 0 rgba(41, 49, 67, .05), 0 22px 44px rgba(41, 49, 67, .12), 0 0 0 1px var(--g1), 0 0 34px 4px var(--g1), 0 10px 70px 10px var(--g2); animation: glow 1.8s ease-in-out .5s infinite alternate; }
+@keyframes glow { to { box-shadow: 0 2px 0 rgba(41, 49, 67, .05), 0 24px 48px rgba(41, 49, 67, .12), 0 0 0 1px var(--g1), 0 0 46px 8px var(--g1), 0 10px 90px 18px var(--g2); } }
+.lift .badge { z-index: 3; }
+.lift .badge::before { transition: transform .45s cubic-bezier(.2, .9, .3, 1.5); }
+.lift:hover .badge::before { transform: rotate(2deg) scale(1.1); }
+.lift:hover .badge img { animation: hop .9s cubic-bezier(.3, .7, .4, 1) forwards, sticker-bob 1.6s ease-in-out .9s infinite alternate; }
+@keyframes hop {
+  0% { transform: none; }
+  25% { transform: translateY(-16px) rotate(-10deg) scale(1.15); }
+  45% { transform: translateY(0) scale(1.2, .86); }
+  65% { transform: translateY(-8px) rotate(8deg) scale(1.08); }
+  100% { transform: translateY(-4px) rotate(4deg) scale(1.12); }
+}
+@keyframes sticker-bob { from { transform: translateY(-4px) rotate(4deg) scale(1.12); } to { transform: translateY(-9px) rotate(-3deg) scale(1.14); } }
+/* Hover sparkles: fine dots and tiny stars in each card's colours drift out from the card's edge. */
+.spark { position: absolute; left: 0; top: 0; width: var(--z); height: var(--z); margin: calc(var(--z) / -2) 0 0 calc(var(--z) / -2); background: var(--c); border-radius: 50%; pointer-events: none; z-index: 1; animation: spark var(--d) cubic-bezier(.12, .75, .3, 1) forwards; }
+.spark.star { border-radius: 0; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
+.spark.ring { background: none; border: 2px solid var(--c); }
+@keyframes spark {
+  0% { opacity: 0; transform: translate(0, 0) scale(.2) rotate(0); }
+  12% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(.9) rotate(var(--r)); }
+}
 
 @media (max-width: 900px) {
   .band .wrap { grid-template-columns: 1fr; text-align: center; gap: 56px; padding-top: 72px; padding-bottom: 80px; }
@@ -160,8 +199,9 @@ footer .brand img { width: 32px; height: 32px; border-radius: 9px; }
   .brand span { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .float, .head { animation: none; }
+  .float, .head, .stage:hover .phone, .lift:hover, .lift:hover .badge img { animation: none; }
   .reveal { opacity: 1; transform: none; transition: none; }
+  .stage:hover { transform: none; }
   html { scroll-behavior: auto; }
 }
 </style>
@@ -205,20 +245,20 @@ footer .brand img { width: 32px; height: 32px; border-radius: 9px; }
     <h2 class="reveal">Your steps, their whole world</h2>
     <p class="lead">No workouts to plan. Just walk like you always do, and your buddy feels every step.</p>
     <div class="steps" style="text-align: left">
-      <div class="card reveal">
+      <div class="card lift reveal" data-sparks="#3CC37A #7CC6EE #FFC83D" style="--g1: rgba(60, 195, 122, .28); --g2: rgba(124, 198, 238, .30)">
         <span class="num">1</span>
         <span class="badge" style="--s: 76px; --t: #D7EAF4"><img src="assets/icons/icon-steps.png" alt=""></span>
         <h3>Walk</h3>
         <p>Your steps come from Apple Health, iPhone or Apple Watch. Every walk counts automatically.</p>
       </div>
-      <div class="card reveal">
+      <div class="card lift reveal" data-sparks="#F08A6C #F5B46B #F6A5C0" style="--g1: rgba(240, 138, 108, .28); --g2: rgba(246, 165, 192, .30)">
         <span class="num">2</span>
         <span class="badge" style="--s: 76px; --t: #F5DDCB"><img src="assets/icons/care-feed.png" alt=""></span>
         <h3>Care</h3>
         <p>Breakfast, baths and playtime unlock as you walk. Your buddy shows how they feel.</p>
         <p class="note">Care never uses coins</p>
       </div>
-      <div class="card reveal">
+      <div class="card lift reveal" data-sparks="#FFC83D #B28DF0 #6FD3E8" style="--g1: rgba(255, 200, 61, .32); --g2: rgba(178, 141, 240, .28)">
         <span class="num">3</span>
         <span class="badge" style="--s: 76px; --t: #FFF0C9"><img src="assets/icons/icon-journey-brightest-star.png" alt=""></span>
         <h3>Grow</h3>
@@ -365,19 +405,19 @@ footer .brand img { width: 32px; height: 32px; border-radius: 9px; }
       <h2 class="reveal">On your wrist and Home Screen</h2>
     </div>
     <div class="duo">
-      <div class="card reveal">
+      <div class="card lift reveal" data-sparks="#7CC6EE #FFC83D #5AA9F0" style="--g1: rgba(124, 198, 238, .32); --g2: rgba(255, 200, 61, .26)">
         <span class="badge" style="--s: 76px; --t: #DDF0FF"><img src="assets/icons/icon-energy.png" alt=""></span>
         <div><h3>Apple Watch</h3><p>Check on your buddy and care for them from your wrist, with complications for your watch face.</p></div>
       </div>
-      <div class="card reveal">
+      <div class="card lift reveal" data-sparks="#F6A5C0 #FFC83D #F08A6C" style="--g1: rgba(246, 165, 192, .32); --g2: rgba(255, 200, 61, .26)">
         <span class="badge" style="--s: 76px; --t: #FFE3EE"><img src="assets/icons/icon-mood.png" alt=""></span>
         <div><h3>Widgets</h3><p>Home Screen and Lock Screen widgets show today's steps and how your buddy is doing.</p></div>
       </div>
     </div>
     <div class="facts">
-      <div class="card fact reveal"><span class="badge" style="--s: 58px; --t: #E3F6E0"><img src="assets/icons/icon-trophy.png" alt=""></span><div><b>Daily recaps</b><span>A look back at every walk</span></div></div>
-      <div class="card fact reveal"><span class="badge" style="--s: 58px; --t: #FFF1C4"><img src="assets/icons/icon-coin.png" alt=""></span><div><b>1 step = 1 coin</b><span>Spend them in the Shop</span></div></div>
-      <div class="card fact reveal"><span class="badge" style="--s: 58px; --t: #D7EAF4"><img src="assets/icons/icon-steps.png" alt=""></span><div><b>Private by design</b><span>Your steps stay on your devices</span></div></div>
+      <div class="card lift fact reveal" data-sparks="#3CC37A #FFC83D #8FD88A" style="--g1: rgba(60, 195, 122, .28); --g2: rgba(255, 200, 61, .26)"><span class="badge" style="--s: 58px; --t: #E3F6E0"><img src="assets/icons/icon-trophy.png" alt=""></span><div><b>Daily recaps</b><span>A look back at every walk</span></div></div>
+      <div class="card lift fact reveal" data-sparks="#FFC83D #F5B46B #FFE07A" style="--g1: rgba(255, 200, 61, .34); --g2: rgba(245, 180, 107, .26)"><span class="badge" style="--s: 58px; --t: #FFF1C4"><img src="assets/icons/icon-coin.png" alt=""></span><div><b>1 step = 1 coin</b><span>Spend them in the Shop</span></div></div>
+      <div class="card lift fact reveal" data-sparks="#3CC37A #7CC6EE #B28DF0" style="--g1: rgba(124, 198, 238, .30); --g2: rgba(60, 195, 122, .24)"><span class="badge" style="--s: 58px; --t: #D7EAF4"><img src="assets/icons/icon-steps.png" alt=""></span><div><b>Private by design</b><span>Your steps stay on your devices</span></div></div>
     </div>
   </div>
 </section>
@@ -453,6 +493,108 @@ function requestParallax() { if (!ticking) { ticking = true; requestAnimationFra
 window.addEventListener("scroll", requestParallax, { passive: true });
 window.addEventListener("resize", requestParallax);
 parallax();
+
+// Card sparkles: fine dust bursts from all around the card's edge on hover, keeps drifting while the pointer stays, and the card tilts toward it.
+[].slice.call(document.querySelectorAll("[data-sparks]")).forEach(function (card) {
+  var colors = card.dataset.sparks.split(" ");
+    var timer = null;
+  function spark() {
+    var w = card.offsetWidth, h = card.offsetHeight;
+    var el = document.createElement("span");
+    var kind = Math.random();
+    el.className = "spark" + (kind < .3 ? " star" : "");
+    // Start on a random point of the card's edge and drift outward from it, like fine dust around the glow.
+    var edge = Math.random() * 2 * (w + h), x, y, nx, ny;
+    if (edge < w) { x = edge; y = 0; nx = 0; ny = -1; }
+    else if (edge < w + h) { x = w; y = edge - w; nx = 1; ny = 0; }
+    else if (edge < 2 * w + h) { x = edge - w - h; y = h; nx = 0; ny = 1; }
+    else { x = 0; y = edge - 2 * w - h; nx = -1; ny = 0; }
+    var dist = 14 + Math.random() * 30, drift = (Math.random() - .5) * 30;
+    var size = kind < .3 ? 6 + Math.random() * 4 : 2 + Math.random() * 3;
+    el.style.left = x + "px";
+    el.style.top = y + "px";
+    el.style.setProperty("--x", (nx * dist + ny * drift).toFixed(1) + "px");
+    el.style.setProperty("--y", (ny * dist + nx * drift - 10).toFixed(1) + "px");
+    el.style.setProperty("--r", ((Math.random() - .5) * 180).toFixed(0) + "deg");
+    el.style.setProperty("--z", size.toFixed(1) + "px");
+    el.style.setProperty("--c", colors[Math.floor(Math.random() * colors.length)]);
+    el.style.setProperty("--d", (900 + Math.random() * 900).toFixed(0) + "ms");
+    el.addEventListener("animationend", function () { el.remove(); });
+    card.appendChild(el);
+  }
+  function burst(n) { for (var i = 0; i < n; i++) spark(); }
+  card.addEventListener("pointerenter", function (e) {
+    if (still.matches) return;
+    burst(40);
+    if (e.pointerType === "mouse" && !timer) timer = setInterval(function () { burst(4); }, 90);
+  });
+  card.addEventListener("pointermove", function (e) {
+    if (still.matches || e.pointerType !== "mouse") return;
+    var c = card.getBoundingClientRect();
+    card.style.setProperty("--tx", (((e.clientY - c.top) / c.height - .5) * -10).toFixed(2) + "deg");
+    card.style.setProperty("--ty", (((e.clientX - c.left) / c.width - .5) * 12).toFixed(2) + "deg");
+  });
+  card.addEventListener("pointerleave", function () {
+    clearInterval(timer); timer = null;
+    // The dust leaves with the pointer: whatever is still in the air fades out fast.
+    [].slice.call(card.querySelectorAll(".spark")).forEach(function (el) {
+      var fade = el.animate([{ opacity: getComputedStyle(el).opacity }, { opacity: 0 }], { duration: 220, easing: "ease-out", fill: "forwards" });
+      fade.onfinish = function () { el.remove(); };
+    });
+    card.style.removeProperty("--tx"); card.style.removeProperty("--ty");
+  });
+});
+
+// Phone tilt: each phone leans toward the pointer while hovered.
+stages.forEach(function (stage) {
+  stage.addEventListener("pointermove", function (e) {
+    if (still.matches || e.pointerType !== "mouse") return;
+    var c = stage.getBoundingClientRect();
+    stage.style.setProperty("--tx", (((e.clientY - c.top) / c.height - .5) * -10).toFixed(2) + "deg");
+    stage.style.setProperty("--ty", (((e.clientX - c.left) / c.width - .5) * 14).toFixed(2) + "deg");
+  });
+  stage.addEventListener("pointerleave", function () { stage.style.removeProperty("--tx"); stage.style.removeProperty("--ty"); });
+});
+
+// Highlighted words type themselves in as their heading scrolls into view.
+if ("IntersectionObserver" in window && !still.matches) {
+  var marks = [].slice.call(document.querySelectorAll(".mark"));
+  marks.forEach(function (mark) {
+    mark.letters = mark.textContent.split("").map(function (c) {
+      var ch = document.createElement("span");
+      ch.className = "ch";
+      ch.textContent = c;
+      return ch;
+    });
+    mark.setAttribute("aria-label", mark.textContent);
+    mark.textContent = "";
+    mark.letters.forEach(function (ch) { ch.setAttribute("aria-hidden", "true"); mark.appendChild(ch); });
+    mark.classList.add("wait");
+  });
+  var typer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      typer.unobserve(e.target);
+      typeIn(e.target);
+    });
+  }, { threshold: .4 });
+  marks.forEach(function (mark) { typer.observe(mark); });
+}
+function typeIn(mark) {
+  var caret = document.createElement("span");
+  caret.className = "caret";
+  caret.setAttribute("aria-hidden", "true");
+  mark.insertBefore(caret, mark.firstChild);
+  mark.classList.remove("wait");
+  var i = 0;
+  setTimeout(function next() {
+    var ch = mark.letters[i++];
+    ch.classList.add("on");
+    mark.insertBefore(caret, ch.nextSibling);
+    if (i < mark.letters.length) setTimeout(next, 45 + Math.random() * 55);
+    else setTimeout(function () { caret.remove(); }, 1100);
+  }, 90);
+}
 
 if ("IntersectionObserver" in window) {
   var io = new IntersectionObserver(function (entries) {
